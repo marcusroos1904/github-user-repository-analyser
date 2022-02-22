@@ -1,0 +1,3 @@
+/home/kali/CLionProjects/github-user-repository-analyser/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/kali/CLionProjects/github-user-repository-analyser/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kali/CLionProjects/github-user-repository-analyser/cmake-build-debug/CMakeFiles/github_user_repository_analyser.dir
