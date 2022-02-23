@@ -65,7 +65,7 @@ int main()
 /**
  * -----------------------------------------------------------------------
  * Clones all repositories for the given user into a specified folder
- * Returns -1 on failure and 1 on success
+ * Returns -1 on failure and 0 on success
  * -----------------------------------------------------------------------
  */
 int cloneAllRepositories(const std::string& username)
