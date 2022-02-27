@@ -35,19 +35,12 @@ int cloneRepo(const std::string& repoName, const std::string& repoUrl, git_repos
 
     // Clone the given repo
     int error = git_clone(&repo, repoUrl.c_str(), path.c_str(), NULL);
-    if (error < 0) 
-    {
+    if (error < 0) {
         const git_error* e = git_error_last();
         fprintf(stderr, "Error %d/%d: %s\n", error, e->klass, e->message);
-        if (repo) {
-            git_repository_free(repo);
-        }
         return -1;
     }
     
-    if (repo) {
-        git_repository_free(repo);
-    }
     return 0;
 }
 
@@ -60,10 +53,9 @@ int main()
     // Initiate the libgit2 library
     git_libgit2_init();
     
-    // Clear the folder that hols all the cloned repos
+    // Clears the folder that holds all the cloned repos
     std::string rm_command = "rm -rf ";
     std::string mkdir_command = "mkdir ";
-
     rm_command += CLONED_REPOS_DIR;
     mkdir_command += CLONED_REPOS_DIR;
     
