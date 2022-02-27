@@ -1,10 +1,40 @@
 
 #include <iostream>
+#include <vector>
 #include <git2.h>
 
+
+/* ------------------------------------------------------------------------------------------------
+ * Returns a vector of all repo URL's for the given GitHub user 
+ * Returns an empty vector on failure or in no repos was found
+ * ------------------------------------------------------------------------------------------------ */
+std::vector<std::string> getAllRepoUrls(const std::string& url) 
+{
+    // THIS IS JUST A TEMPORARY TEST CODE
+    std::vector<std::string> allRepos;
+    allRepos.push_back("TETSURL");
+
+    return allRepos;
+}
+
+
+/* ------------------------------------------------------------------------------------------------
+ * Clones the given repository. 
+ * The parameter repoPath is the relative path to the directory that the repository was cloned into
+ * Returns 0 on success and -1 on failure
+ * ------------------------------------------------------------------------------------------------ */
+int cloneRepo(const std::string& repoUrl, std::string& repoPath) 
+{
+    return -1;
+}
+
+
+/* ------------------------------------------------------------------------------------------------
+ * MAIN 
+ * ------------------------------------------------------------------------------------------------ */
 int main() 
 {
-    // TESTING libgit2
+    // TESTING libgit2 (REMOVE THIS LATER)
     git_repository *repo = NULL;
     git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
 
@@ -16,8 +46,33 @@ int main()
     std::cout << "Received: " << username << std::endl;
 
     
-    // TODO: Validate if the user exist or not
-    std::string userRepoUrl = "https://github.com/" + username;
+    // TODO: Validate if the user exist or not, and if the user exist, then get the list of all his repos (remember to validate return value from function)
+    std::string userUrl = "https://github.com/" + username;
+    std::vector<std::string> allRepos = getAllRepoUrls(userUrl); 
+
+
+    // Loop through all repos
+    for (int i = 0; i < allRepos.size(); i++)
+    {
+        // Clone the current repository
+        std::string path = "";
+        if (cloneRepo(allRepos[i], path) == -1) {
+            std::cerr << "Failed to clone repo: " << allRepos[i] << std::endl;
+            continue;
+        }
+        
+
+        
+    }
+
+
+
+
+
+
+    //
+    // TODO: Rewriting the program flow and all the todo points. So all this should be removed and/or replaced soon:
+    //
 
 
     // TODO: Add feature to clone all the repositories for the given user
