@@ -1,8 +1,14 @@
 
 #include <iostream>
+#include <git2.h>
 
 int main() 
 {
+    // TESTING libgit2
+    git_repository *repo = NULL;
+    git_repository_init_options opts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
+
+
     // TODO: Add a good looking menu instead of this temporary one
     std::cout << "Input GitHub username for the user you want to analyze: " << std::endl;
     std::string username;
