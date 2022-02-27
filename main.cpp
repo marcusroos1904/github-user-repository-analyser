@@ -1,10 +1,6 @@
 
 #include <iostream>
 
-
-int cloneAllRepositories(const std::string& username);
-
-
 int main() 
 {
     // TODO: Add a good looking menu instead of this temporary one
@@ -21,10 +17,12 @@ int main()
     // TODO: Add feature to clone all the repositories for the given user
     // An idea is to clone the repos into a new folder that has the same name as the user
     // SO if the username is alex, then a new folder called alex will be created that contains all his repos
+    /*
     if (cloneAllRepositories(username) == -1) {
         std::cout << "Failed to clone repositories for: " << username << std::endl;
         return 1;
     }
+    */
 
 
     // TODO: Loop though all repos and calculate MRE for each of them, and URE for the user
@@ -59,17 +57,4 @@ int main()
     // The summary should print the repos that has the MIN, MAX and MEAN values for the URE score
 
     return 0;
-}
-
-
-/**
- * -----------------------------------------------------------------------
- * Clones all repositories for the given user into a specified folder
- * Returns -1 on failure and 0 on success
- * -----------------------------------------------------------------------
- */
-int cloneAllRepositories(const std::string& username)
-{
-    // TODO: Implement function
-    return -1;
 }
