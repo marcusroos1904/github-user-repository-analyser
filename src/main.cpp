@@ -43,11 +43,6 @@ int main()
     system(rm_command.c_str());
     system(mkdir_command.c_str());
 
-
-    //
-    // TODO: Add a good looking menu instead of this temporary one (this one doesn't even work lol)
-    //
-
     int choice = menu();
     std::string username;
     switch(choice)
@@ -66,9 +61,9 @@ int main()
             // Call function to handle multiple usernames
             break;
     }
-    std::cout << "Received: " << username << std::endl << std::endl;
     std::string userUrl = "https://github.com/" + username;
-    
+    std::cout << "UserUrl: " << userUrl << std::endl << std::endl;
+
     //
     // TODO: Validate if the user exist or not
     //
