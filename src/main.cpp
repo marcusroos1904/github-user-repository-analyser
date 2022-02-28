@@ -4,7 +4,27 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <limits>
+#include <algorithm>
 
+
+int menu() {
+        std::cout << "===== Github User Repository Analyser =====" << std::endl;
+        std::cout << "1. Enter Github Username" << std::endl;
+        std::cout << "2. Load Github Username list (Might not be added)." << std::endl;
+        std::cout << "0. Exit" << std::endl;
+        std::cout << "===========================================" << std::endl;
+        std::cout << "Enter choice" << std::endl;
+        int choice = 0;
+        std::cin >> choice;
+        while (std::cin.fail() || choice < 0 || choice > 2) {
+            std::cout << "Wrong input.\n";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin >> choice;
+        }
+    return choice;
+}
 
 /* ------------------------------------------------------------------------------------------------
  * MAIN 
@@ -24,17 +44,29 @@ int main()
     system(mkdir_command.c_str());
 
 
-
-
     //
     // TODO: Add a good looking menu instead of this temporary one (this one doesn't even work lol)
     //
-    std::cout << "(THIS DOES NOTHING RIGHT NOW) Input GitHub username for the user you want to analyze: " << std::endl;
-    std::string username;
-    std::cin >> username;
-    std::cout << "Received: " << username << std::endl << std::endl;
 
-   
+    int choice = menu();
+    std::string username;
+    switch(choice)
+    {
+        case 0:
+        default:
+            return 0;
+        case 1:
+            std::cout << "Enter Github Username: \n";
+            std::cin >> username;
+            // Call function to handle one username
+            break;
+        case 2:
+            std::cout << "Load Github Username list: \n";
+            std::cin >> username;
+            // Call function to handle multiple usernames
+            break;
+    }
+    std::cout << "Received: " << username << std::endl << std::endl;
     std::string userUrl = "https://github.com/" + username;
     
     //
@@ -43,8 +75,6 @@ int main()
    
     // Get a vector of url's for all the users repository 
     std::vector<std::string> allRepos = getAllRepoUrls(userUrl);  // TODO: Implement this function for read (right now it returns a hard coded test repo)
-
-
 
     // A vector to store all the relevant repo data for all the users repositories
     std::vector<RepoData> all_repo_data;
