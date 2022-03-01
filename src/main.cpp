@@ -6,7 +6,32 @@
 #include <cstring>
 #include <limits>
 #include <algorithm>
+#include <curl/curl.h>
+#include <curl/easy.h>
 
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+    return size * nmemb;
+}
+
+int check_url(char *url)
+{
+    CURL *curl;
+    CURLcode response;
+    curl = curl_easy_init();
+    long ct;
+    if(curl) {
+        std::cout.setstate(std::ios::failbit);
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        response = curl_easy_perform(curl);
+        if (CURLE_OK == response){
+            response = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &ct);
+        }
+    }
+    curl_easy_cleanup(curl);
+    return (ct != 200) ? 0 : 1;
+}
 
 int menu() {
         std::cout << "===== Github User Repository Analyser =====" << std::endl;
@@ -33,7 +58,7 @@ int main()
 {
     // Initiate the libgit2 library
     git_libgit2_init();
-    
+
     // Clears the folder that holds all the cloned repos
     std::string rm_command = "rm -rf ";
     std::string mkdir_command = "mkdir ";
@@ -42,11 +67,6 @@ int main()
     
     system(rm_command.c_str());
     system(mkdir_command.c_str());
-
-
-    //
-    // TODO: Add a good looking menu instead of this temporary one (this one doesn't even work lol)
-    //
 
     int choice = menu();
     std::string username;
@@ -66,12 +86,16 @@ int main()
             // Call function to handle multiple usernames
             break;
     }
-    std::cout << "Received: " << username << std::endl << std::endl;
     std::string userUrl = "https://github.com/" + username;
-    
-    //
-    // TODO: Validate if the user exist or not
-    //
+    char* char_arr;
+    char_arr = &userUrl[0];
+    std::cout << "UserUrl: " << userUrl << std::endl << std::endl;
+
+    int result = check_url(char_arr);
+    if (result)
+        printf("User exists!\n");
+    else
+        printf("User does not exist!\n");
    
     // Get a vector of url's for all the users repository 
     std::vector<std::string> allRepos = getAllRepoUrls(userUrl);  // TODO: Implement this function for read (right now it returns a hard coded test repo)

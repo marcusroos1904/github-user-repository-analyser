@@ -8,7 +8,7 @@ libgit2_lib     = /usr/local/Cellar/libgit2/1.3.0/lib
 # CFLAGS = -std=c++11 -I$(libgit2_include) -L$(libgit2_lib) -framework CoreFoundation -framework Security -lcurl -lz -liconv -lssh2 -lgit2
 
 # Flags for Linux
-CFLAGS = -std=c++11 -lssh2 -lgit2
+CFLAGS = -std=c++11 -lssh2 -lgit2 -lcurl
 
 
 CC = g++
