@@ -1,28 +1,33 @@
 
 #include "definitions.h"
 
+#include <git2.h>
 #include <iostream>
 
 /* ------------------------------------------------------------------------------------------------
  * Clones the repository from the URL given as the parameter: repoUrl
- * The repository will be cloned into a directory with the named specified as the parameter: repoName
- * The cloned repository will be set to the "repo" parameter on success
+ * The repository will be cloned into a directory with the path specified as the parameter: repoPath 
  * 
  * Returns 0 on success and -1 on failure
  * ------------------------------------------------------------------------------------------------ */
-int cloneRepo(const std::string& repoName, const std::string& repoUrl, git_repository* repo) 
+int cloneRepo(const std::string& repoPath, const std::string& repoUrl)
 {
-    repo = NULL;
-    std::string path = CLONED_REPOS_DIR + repoName;
-    std::cout << "Cloning: '" << repoUrl << "' to: '" << path << "'" << std::endl;
+    git_repository* repo = NULL;
+    fprintf(stderr, "Cloning: %s, to path: %s\n", repoUrl.c_str(), repoPath.c_str());
 
     // Clone the given repo
-    int error = git_clone(&repo, repoUrl.c_str(), path.c_str(), NULL);
+    int error = git_clone(&repo, repoUrl.c_str(), repoPath.c_str(), NULL);
     if (error < 0) {
         const git_error* e = git_error_last();
-        fprintf(stderr, "Error %d/%d: %s\n", error, e->klass, e->message);
+        fprintf(stderr, "Failed to clone repo. Error %d/%d: %s\n", error, e->klass, e->message);    
+        if (repo)
+            git_repository_free(repo);
+        
         return -1;
     }
     
+    if (repo)
+        git_repository_free(repo);
+
     return 0;
 }
