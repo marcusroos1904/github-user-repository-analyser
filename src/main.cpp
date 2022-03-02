@@ -106,23 +106,36 @@ int main()
     // Loop through all the repos
     for (int i = 0; i < allRepos.size(); i++)
     {
-        git_repository* repo = NULL;
+        // TODO: Create and implement this function for read
+        // std::string repoName = getRepoNameFromUrl(allRepos[i]);  
         std::string repoName = "TESTNAME";  // This is just a hard coded test name 
-        // std::string repoName = getRepoNameFromUrl(allRepos[i]);  // TODO: Create and implement this function for read
+        
+        // Create the repo path
+        std::string repoPath = CLONED_REPOS_DIR;
+        repoPath += repoName;
 
+        
         // Clone the current repository
-        if (cloneRepo(repoName, allRepos[i], repo) == -1) {
+        if (cloneRepo(repoPath, allRepos[i]) == -1) {
             std::cerr << "Failed to clone repo: " << allRepos[i] << std::endl;
-            if (repo) {
-                git_repository_free(repo);
-            }
             // Skip this repo and move on to the next (TODO: Maybe print all failed/skipped repos at the end of the summary)
             continue;  
         }
 
         
-        // 
-        // TODO: A potential problem might be that the "username" might be different than the "author name" for the given commits. Investigate this!
+        // Get a set of all authors for this repository. Each author will have all relevant data fields needed for later
+        std::vector<AuthorData> all_authors = getAllAuthorData(repoPath);  
+        if (all_authors.empty()) {
+            std::cerr << "Failed to extract all author data from repo: " << repoName << std::endl;
+            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            return 1;
+        }
+
+        
+        //
+        // TODO: The AUTHOR NAME is going to be set to the Git-username, but the "username" given as input is the GitHub username
+        //       This will casue problems when looking for lambdas made by the given user, since we only have their GitHub username
+        //       How should we fix this? No idea right now. A problem for another day
         //
 
 
@@ -130,24 +143,13 @@ int main()
         // TODO: Implement this function for real (returns -1 for now)
         //
         // Get the total number of lambdas used by the given user 
-        int total_lambdas_by_user = getTotalLambdasByUser(repo, username); 
+        int total_lambdas_by_user = 0; //getTotalLambdasByUser(repo, username); 
         if (total_lambdas_by_user == -1) {
             std::cerr << "Failed to get the numbers of lambdas for the given user in repo: " << repoName << std::endl;
             system(rm_command.c_str());  // Delete the folder containing all the cloned repos
             return 1;
         }
 
-
-        //
-        // TODO: Implement this function for real (returns an empty vector for now)
-        //
-        // Get a set of all authors for this repository. Each author will have all relevant data fields needed for later
-        std::vector<AuthorData> all_authors = getAllAuthorData(repo);  
-        if (all_authors.empty()) {
-            std::cerr << "Failed to find any authors/contributers for repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
-            return 1;
-        }
 
         //
         // TODO: Implement this function for real (returns -1 for now)
@@ -204,12 +206,6 @@ int main()
         //
         // TODO: Print the current RepoData to the user so he/she can easily understand it
         //
-
-
-        // Free the memory for the current repo
-        if (repo) {
-            git_repository_free(repo);
-        }
     }
 
 
