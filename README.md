@@ -5,10 +5,10 @@
 The program requires the libgit2 library  
   
 Download the latest release: https://github.com/libgit2/libgit2/releases (At time of writing, 1.4.2)  
-Create new dir at /home/lib (mkdir /home/libgit2)  
+Create new dir at /home/lib (mkdir /home/libg)  
 Download -> unzip to /home/lib/  
 cd to root (contains AUTHORS, SECURITY, COPYING etc)  
-In temrinal: mkdir build  
+In terminal: mkdir build  
 In temrinal: cd build  
 In temrinal: cmake ..  
 In temrinal: cmake --build .  
