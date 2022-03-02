@@ -11,8 +11,8 @@ std::vector<std::string> getAllRepoUrls(const std::string& url)
 
     // THIS IS JUST A TEMPORARY TEST CODE
     // Hardcoded test urls 
-    //allRepos.push_back("https://github.com/AppFlowy-IO/AppFlowy");
-    allRepos.push_back("https://github.com/marcusroos1904/github-user-repository-analyser");
+    allRepos.push_back("https://github.com/AppFlowy-IO/AppFlowy");
+    //allRepos.push_back("https://github.com/marcusroos1904/github-user-repository-analyser");
 
     return allRepos;
 }
