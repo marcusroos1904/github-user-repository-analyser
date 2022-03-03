@@ -151,9 +151,6 @@ int main()
         }
 
 
-        //
-        // TODO: Implement this function for real (returns -1 for now)
-        //
         // Calculate the MRE score for this repo
         int MRE_score = calculateMRE(all_authors);
         if (MRE_score == -1) {
@@ -163,11 +160,10 @@ int main()
         }
 
 
-        //
-        // TODO: Implement this function for real (returns -1 for now)
-        //
+        std::string TEST_NAME = "MikeWallaceDev"; // TODO: Replace this with the requested author name (see todo above for why we can't pass input/username)
+        
         // Calculate the URE score for the given user for this repo
-        float URE_score = calculateURE(MRE_score, all_authors);
+        float URE_score = calculateURE(TEST_NAME, all_authors);
         if (URE_score == -1) {
             std::cerr << "Failed to calculate the URE score for the given user in repo: " << repoName << std::endl;
             system(rm_command.c_str());  // Delete the folder containing all the cloned repos
@@ -175,11 +171,8 @@ int main()
         }
 
 
-        //
-        // TODO: Implement this function for real (returns -1 for now)
-        //
         // Get the number of commits for the given user
-        int number_of_commits = getNumberOfCommits(all_authors, username);
+        int number_of_commits = getNumberOfCommits(all_authors, TEST_NAME);
         if (number_of_commits == -1) {
             std::cerr << "Failed to find the total number of commits for: " << username << " in repo: " << repoName << std::endl;
             system(rm_command.c_str());  // Delete the folder containing all the cloned repos
@@ -206,6 +199,11 @@ int main()
         //
         // TODO: Print the current RepoData to the user so he/she can easily understand it
         //
+
+        // THIS IS TEMPORARY (Make it look better later)
+        fprintf(stderr, "\nRepo: %s\nMRE: %d\nURE: %.2f\nLambdas: %d\nCommits: %d\nLambdas/commit: %.2f\n\n",
+     repoData.name, repoData.MRE, repoData.URE, repoData.lambdas, number_of_commits, repoData.avg_lambdas_per_commit);
+    
     }
 
 
