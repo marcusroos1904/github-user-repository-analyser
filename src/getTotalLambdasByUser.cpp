@@ -9,9 +9,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <fstream>
-
+#include <regex>
 
 #define DIFF_FILE "commit_diff.txt"
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -23,6 +24,9 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
 {
     fprintf(stderr, "\nInside: getTotalLambdasByUser!\n");
     
+
+    int lambda_counter = 0;
+
     
     // Create the DIFF_FILE that stores the output from the git diff command later
     std::string rm_command = "rm -f ";
@@ -111,8 +115,7 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
         // Only check the commit that are made by the requested author
         const git_signature* commit_signature = git_commit_committer(commit);
         if (strcmp(commit_signature->name, authorName.c_str()) != 0) {
-            if (commit)
-                git_commit_free(commit);
+            git_commit_free(commit);
             continue;
         }
         
@@ -121,27 +124,23 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
         std::string commit_hash;
         char hex_str[256];
         int i;
-        for (i = 0; i < sizeof(commit_id->id); i++) {
+        for (i = 0; i < sizeof(commit_id->id); i++)
             sprintf((hex_str + i*2), "%02x", commit_id->id[i]);
-        }
         hex_str[i*2] = '\0';
         commit_hash.append(hex_str);
+
 
         // Construct the shell command for calling "git diff" on the current commit and its parent. The output is saved to the given DIFF_FILE
         std::string cmd = "git --git-dir=";
         cmd = cmd + repoPath + "/.git diff " + commit_hash + "^! > " + DIFF_FILE;
 
         
-        // TODO: REMOVE THIS
-        //fprintf(stderr, "Command: %s\n", cmd.c_str());
-
 
         // Fork a child process
         int pid = fork();
         if (pid == -1) {
             perror("Failed to fork a child process");
-            if (commit)
-                git_commit_free(commit);
+            git_commit_free(commit);
             git_revwalk_free(walker);
             git_repository_free(repo);
             system(rm_command.c_str());
@@ -159,13 +158,15 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
 
 
 
+        // Get a vector with all file extensions that are going to be checked for lambdas
         std::vector<std::string> validFileExtensions = getValidFileExtensions();
-
+       
+        // Create the regex needed to detect lambdas in the code
+        std::regex lambda_regex(R"([\,\=\s\(\)]*[\,\=\s\t\(\)]+\[[a-zA-Z0-9\*\,_&\s=:<>]*\]\s*(\(|\{))", std::regex::optimize);
 
         // Open the diff file and read line by line
         std::ifstream fromFile(DIFF_FILE);
-        std::string line;
-        
+        std::string line;        
         bool isFileChunk = false;
 
         while (std::getline(fromFile, line))
@@ -179,11 +180,28 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
                 }
             }
             
-            // If we are inside a valid file chunk right now, then look for lines where code has been added
-            if (isFileChunk)
+            // If we are inside a valid file chunk right now, then look for lines where code has been added, and search them for lambdas
+            if (isFileChunk) 
             {
                 if (line.size() > 2 && line[0] == '+') {
-                    fprintf(stderr, "%s\n", line.c_str());
+                    line.erase(0, 1);  // Remove the first '+' character
+                    
+                    // Remove all strings from the line
+			        size_t stringPos = 0;
+                    size_t endStringPos = 0;
+                    if ((stringPos = line.find_first_of("\"")) != std::string::npos) {
+				        if ((endStringPos = line.find_last_of("\"")) != std::string::npos) {
+					        line.erase(stringPos + 1, endStringPos - stringPos - 1);
+				        }
+			        }
+
+                    // TODO: Skip all code that are "comments", like:  // and /* */ and /** */
+
+                    if (std::regex_search(line, lambda_regex)) {
+                        fprintf(stderr, "%s\n", line.c_str());  // TODO: Remove this!
+                        lambda_counter++;
+                    }
+                    
                 }
             }
 
@@ -195,8 +213,6 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
                     for (int i = 0; i < validFileExtensions.size(); i++) {
                         if (validFileExtensions[i] == file_extension) {
                             isFileChunk = true;
-
-                            fprintf(stderr, "---------------------\nNEW VALID FILE CHUNK DETECTED\n---------------------\n");
                             break;
                         }    
                     }        
@@ -204,49 +220,17 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
             }
         }
 
-
-
+        // Free the allocated memory for the current commit
+        if (commit)
+            git_commit_free(commit);
     } 
 
 
-    
-    /* 
-    int pid = fork();
-    if (pid == -1) {
-        perror("Failed to fork child process");
-        exit(1);
-    }
-    
-    if (pid == 0) {
-        // Full command (with hard coded COMMIT_HASH for now):
-        // git --git-dir=github-user-repository-analyser/.git diff 125abecd263425c86b960e593a258b80e959d0b1
-        
-        std::string cmd = "git --git-dir=";
-        cmd += repoPath;
-        cmd += "/.git";
-        cmd += " diff 264166fa293eebe61eeac63c31490d5c8a6f1b00^! > ";  //TEST.txt";
-        cmd += DIFF_FILE;
-        
-        fprintf(stderr, "CALLING git diff:\n%s\n", cmd.c_str());
-        execl("/bin/sh", "sh", "-c", cmd.c_str(), 0);
-        return 0;
-    }
-    else {
-        while (wait(NULL) > 0) ;
-    }
-    */
-
-
-    if (commit)
-        git_commit_free(commit);
     git_revwalk_free(walker);
     git_repository_free(repo);
+    system(rm_command.c_str());
 
-    // TODO: Remove the code comment for this command
-    //system(rm_command.c_str());
-
-
-    return -1;
+    return lambda_counter;
 }
 
 
