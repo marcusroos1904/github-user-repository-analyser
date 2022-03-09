@@ -137,13 +137,15 @@ int main()
         //       This will casue problems when looking for lambdas made by the given user, since we only have their GitHub username
         //       How should we fix this? No idea right now. A problem for another day
         //
+        std::string TEST_NAME = "MikeWallaceDev"; // TODO: Replace this with the requested author name (see todo above for why we can't pass input/username)
 
 
         //
         // TODO: Implement this function for real (returns -1 for now)
         //
         // Get the total number of lambdas used by the given user 
-        int total_lambdas_by_user = 0; //getTotalLambdasByUser(repo, username); 
+        int total_lambdas_by_user = getTotalLambdasByUser(repoPath, TEST_NAME); 
+        total_lambdas_by_user = 0;
         if (total_lambdas_by_user == -1) {
             std::cerr << "Failed to get the numbers of lambdas for the given user in repo: " << repoName << std::endl;
             system(rm_command.c_str());  // Delete the folder containing all the cloned repos
@@ -159,8 +161,6 @@ int main()
             return 1;
         }
 
-
-        std::string TEST_NAME = "MikeWallaceDev"; // TODO: Replace this with the requested author name (see todo above for why we can't pass input/username)
         
         // Calculate the URE score for the given user for this repo
         float URE_score = calculateURE(TEST_NAME, all_authors);
