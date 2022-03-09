@@ -30,9 +30,11 @@ struct AuthorData {
 
 std::vector<std::string> getAllRepoUrls(const std::string& url);
 int cloneRepo(const std::string& repoPath, const std::string& repoUrl);
-int getTotalLambdasByUser(git_repository* repo, const std::string& username);
+int getTotalLambdasByUser(const std::string& repoPath, const std::string& authorName);
 std::vector<AuthorData> getAllAuthorData(const std::string& repoPath);
 int calculateMRE(const std::vector<AuthorData>& all_authors);
 float calculateURE(const std::string& author_name, const std::vector<AuthorData>& all_authors);
 int getNumberOfCommits(const std::vector<AuthorData>& all_authors, const std::string& username);
+std::vector<std::string> getValidFileExtensions();
+
 

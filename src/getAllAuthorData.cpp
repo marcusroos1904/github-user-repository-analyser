@@ -39,6 +39,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     if ((head_fileptr = fopen(path_master.c_str(), "r")) == NULL) {
         if ((head_fileptr = fopen(path_main.c_str(), "r")) == NULL) {
             std::cerr << "Failed to read HEAD. Error when opening file, tried both: " << path_master << ", and: " << path_main << std::endl;
+            git_repository_free(repo);
             return {};
         }
         path_master = path_main;
@@ -49,6 +50,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     if (fread(head_rev, 40, 1, head_fileptr) != 1) {
         std::cerr << "Failed to read HEAD. Error when reading from: " << path_master << std::endl;
         fclose(head_fileptr);
+        git_repository_free(repo);
         return {};
     }
 
@@ -60,6 +62,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     git_oid oid;
     if(git_oid_fromstr(&oid, head_rev) < 0) {
         fprintf(stderr, "Invalid git object: '%s'\n", head_rev);
+        git_repository_free(repo);
         return {};
     }
 
@@ -74,7 +77,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     
     int counter = 0;
 
-    // Loop though all the commits in the current repo
+    // Loop though all the commits in the current branch
     while (git_revwalk_next(&oid, walker) != GIT_ITEROVER) 
     {
         counter++;
@@ -85,14 +88,12 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
             const git_error *e = git_error_last();
             fprintf(stderr, "Failed to loopkup the next commit. Error %d/%d: %s\n", error, e->klass, e->message);
             git_revwalk_free(walker);
+            git_repository_free(repo);
             return {};
         }
 
-        // Get the signature data for the current commit
-        commit_signature = git_commit_committer(commit);
-        
-        
         // Ignore the author if it's GitHub. This author is used to perform all the merged pull requests
+        commit_signature = git_commit_committer(commit);
         if (strcmp(commit_signature->name, "GitHub") == 0) {
             git_commit_free(commit);
             continue;
@@ -101,7 +102,6 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
         // Get the time of the commit as time since epoch (in seconds)
         git_time_t time_sec = commit_signature->when.time;
         int days_offset = time_sec / 86400;
-
 
         // Go through all authors in the set and check if the current author already exist
         bool doesAuthorAlreadyExist = false;
@@ -152,9 +152,11 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     }
 
     git_revwalk_free(walker);
-    
+    git_repository_free(repo);
+
    
     // TODO: Remove this later!
+    // TODO: Remember to remove the "counter" variable further up since this is only used when printing this debug data
     fprintf(stderr, "\ngetAllAuthorData finished!! (This can be removed later, this is just to see if all authors was found)\n");
     fprintf(stderr, "Number of commits: %d, Number of authors: %d\n", counter, (int)all_author_data.size()); 
     for (int i = 0; i < all_author_data.size(); i++) {

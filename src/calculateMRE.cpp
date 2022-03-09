@@ -34,11 +34,5 @@ int calculateMRE(const std::vector<AuthorData>& all_authors)
 
     // Calculate and return the MRE score
     int MRE = (int) (total / numberOfAuthors);
-    
-
-    // TODO: This is for debug and can be removed later!
-    fprintf(stderr, "\nMRE score: %d\n", MRE);
-
-
     return MRE;
 }
