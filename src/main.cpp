@@ -9,6 +9,14 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+void before_exit(const std::string& msg)
+{
+    std::cerr << msg << std::endl;
+    std::string rm_command = "rm -rf ";
+    rm_command += CLONED_REPOS_DIR;
+    system(rm_command.c_str()); 
+}
+
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
     return size * nmemb;
@@ -98,36 +106,31 @@ int main()
         printf("User does not exist!\n");
    
     // Get a vector of url's for all the users repository 
-    std::vector<std::string> allRepos = getAllRepoUrls(userUrl);  // TODO: Implement this function for read (right now it returns a hard coded test repo)
+    std::vector<std::string> allRepos = getAllRepoUrls(userUrl);  // TODO: Implement this function for real (right now it returns a hard coded test repo)
 
-    // A vector to store all the relevant repo data for all the users repositories
-    std::vector<RepoData> all_repo_data;
+    
 
     // Loop through all the repos
+    std::vector<RepoData> all_repo_data;
     for (int i = 0; i < allRepos.size(); i++)
     {
         // TODO: Create and implement this function for read
         // std::string repoName = getRepoNameFromUrl(allRepos[i]);  
         std::string repoName = "TESTNAME";  // This is just a hard coded test name 
         
-        // Create the repo path
+
+        // Create the local path that will store the cloned repository
         std::string repoPath = CLONED_REPOS_DIR;
         repoPath += repoName;
-
         
-        // Clone the current repository
         if (cloneRepo(repoPath, allRepos[i]) == -1) {
             std::cerr << "Failed to clone repo: " << allRepos[i] << std::endl;
-            // Skip this repo and move on to the next (TODO: Maybe print all failed/skipped repos at the end of the summary)
-            continue;  
+            continue;  // TODO: Print all failed/skipped repos at the end of the summary
         }
 
-        
-        // Get a set of all authors for this repository. Each author will have all relevant data fields needed for later
         std::vector<AuthorData> all_authors = getAllAuthorData(repoPath);  
         if (all_authors.empty()) {
-            std::cerr << "Failed to extract all author data from repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            before_exit("Failed to extract author data from repo: " + repoName);
             return 1;
         }
 
@@ -140,52 +143,38 @@ int main()
         std::string TEST_NAME = "Marco Magdy"; // TODO: Replace this with the requested author name (see todo above for why we can't pass input/username)
         //std::string TEST_NAME = "MikeWallaceDev"; 
 
-        //
-        // TODO: Implement this function for real (returns -1 for now)
-        //
-        // Get the total number of lambdas used by the given user 
+        
+
         int total_lambdas_by_user = getTotalLambdasByUser(repoPath, TEST_NAME); 
         if (total_lambdas_by_user == -1) {
-            std::cerr << "Failed to get the numbers of lambdas for the given user in repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            before_exit("Failed to find lambdas for repo: " + repoName);
             return 1;
         }
 
-
-        // Calculate the MRE score for this repo
         int MRE_score = calculateMRE(all_authors);
         if (MRE_score == -1) {
-            std::cerr << "Failed to calculate the MRE score for repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            before_exit("Failed to calculate the MRE score for repo: " + repoName);
             return 1;
         }
 
-        
-        // Calculate the URE score for the given user for this repo
         float URE_score = calculateURE(TEST_NAME, all_authors);
         if (URE_score == -1) {
-            std::cerr << "Failed to calculate the URE score for the given user in repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            before_exit("Failed to calculate the URE score for repo: " + repoName);
             return 1;
         }
 
-
-        // Get the number of commits for the given user
         int number_of_commits = getNumberOfCommits(all_authors, TEST_NAME);
         if (number_of_commits == -1) {
-            std::cerr << "Failed to find the total number of commits for: " << username << " in repo: " << repoName << std::endl;
-            system(rm_command.c_str());  // Delete the folder containing all the cloned repos
+            before_exit("Failed to find the total number of commits for: " + username + " in repo: " + repoName);
             return 1;
         }
 
-
-        // Calculate the average lambdas per commit for the given user
         float avg_lambdas_per_commit = (total_lambdas_by_user / (float)number_of_commits);
+
 
 
         // Create a RepoData object and add it to the list
         RepoData repoData;
-
         strcpy(repoData.name, repoName.c_str());
         repoData.MRE = MRE_score;
         repoData.URE = URE_score;
@@ -195,8 +184,10 @@ int main()
         all_repo_data.push_back(repoData);    
 
 
+
         //
         // TODO: Print the current RepoData to the user so he/she can easily understand it
+        // TODO: The URE should be printed as a percentage
         //
 
         // THIS IS TEMPORARY (Make it look better later)

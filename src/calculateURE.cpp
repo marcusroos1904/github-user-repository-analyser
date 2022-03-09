@@ -58,9 +58,5 @@ float calculateURE(const std::string& author_name, const std::vector<AuthorData>
     }
 
     float percentile = (float) position / daysBetweenCommits.size();
-
-    // TODO: This is for debug info and can be removed later!
-    fprintf(stderr, "\nURE score: %.2f\n", percentile);
-
     return percentile;
 }

@@ -15,9 +15,6 @@ std::vector<std::string> getValidFileExtensions()
     fe.push_back("hxx");
     fe.push_back("h++");
 
-    // TODO: REMOVE THIS
-    fe.push_back("dart");
-
     return fe;
 }
 
