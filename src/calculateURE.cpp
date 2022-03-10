@@ -1,6 +1,11 @@
 
 #include "definitions.h"
 
+#include <algorithm>
+#include <curl/curl.h>
+#include <curl/easy.h>
+#include <vector>
+
 /* ------------------------------------------------------------------------------------------------
  * Calculates and return the URE score based on all the AuthorData that was passed as the parameter: all_authors
  * The URE score is which percentile the specified author falls into, for the days between first and last commits 

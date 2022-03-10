@@ -2,6 +2,7 @@
 .DS_Store
 .idea/*
 cmake-build-debug/*
+GithubAnalyser
 out
 commit_diff.txt
 
