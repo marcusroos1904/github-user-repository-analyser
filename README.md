@@ -5,15 +5,15 @@
 The program requires the libgit2 library  
   
 Download the latest release: https://github.com/libgit2/libgit2/releases (At time of writing, 1.4.2)  
-Create new dir at /home/lib (mkdir /home/libg)  
+Create new dir at /home/lib (mkdir /home/lib)  
 Download -> unzip to /home/lib/  
 cd to root (contains AUTHORS, SECURITY, COPYING etc)  
 In terminal: mkdir build  
-In temrinal: cd build  
-In temrinal: cmake ..  
-In temrinal: cmake --build .  
+In terminal: cd build  
+In terminal: cmake ..  
+In terminal: cmake --build .  
 Once finished > cd to github user repository analyser root > 'make'  
-In temrinal: LD_LIBRARY_PATH=/home/lib/libgit2-1.4.2/build/  
+In terminal: LD_LIBRARY_PATH=/home/lib/libgit2-1.4.2/build/  
 In terminal: export LD_LIBRARY_PATH  
   
 Good to go  
