@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <vector>
+#include <iostream>
 
 /* ------------------------------------------------------------------------------------------------
  * Calculates and return the URE score based on all the AuthorData that was passed as the parameter: all_authors
@@ -34,10 +35,14 @@ float calculateURE(const std::string& author_name, const std::vector<AuthorData>
         }
 
         int diff = all_authors[i].lastCommit - all_authors[i].firstCommit;
+        if (diff <= 0) {
+            continue;  // Skip auhtors that has not atleast one day between their oldest and newest commit
+        }
+
         daysBetweenCommits.push_back(diff);
 
         // Check if the current author is the requested author
-        if (strcmp(all_authors[i].name, author_name.c_str()) == 0) {
+        if (strcmp(author_name.c_str(), all_authors[i].name) == 0) {
             author_value = diff;
         }
     }
@@ -47,21 +52,21 @@ float calculateURE(const std::string& author_name, const std::vector<AuthorData>
     }
 
     // Sort the vector from lowest to highest
-    sort(daysBetweenCommits.begin(), daysBetweenCommits.end());
+    std::sort(daysBetweenCommits.begin(), daysBetweenCommits.end());
     
     // Find which position in the sorted vector belongs to the requested author (index + 1) 
     int position = -1;
     for (int i = 0; i < daysBetweenCommits.size(); i++) {
         if (author_value == daysBetweenCommits[i]) {
-            position = (i + 1);
+            position = (i+1);
             break;
         } 
     }
-
     if (position == -1) {
-        return -1;
+        return -1.0f;
     }
 
-    float percentile = (float) position / daysBetweenCommits.size();
+    float percentile = (float) (position / (float) daysBetweenCommits.size());
+
     return percentile;
 }

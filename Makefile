@@ -7,10 +7,10 @@ libgit2_lib     = /usr/local/Cellar/libgit2/1.3.0/lib
 # Set CFLAGS depending on the OS
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-    CFLAGS = -std=c++11 -lssh2 -lgit2 -lcurl
+    CFLAGS = -O3 -std=c++11 -lssh2 -lgit2 -lcurl
 endif
 ifeq ($(UNAME_S),Darwin)
-    CFLAGS = -std=c++11 -I$(libgit2_include) -L$(libgit2_lib) -framework CoreFoundation -framework Security -lcurl -lz -liconv -lssh2 -lgit2
+    CFLAGS = -O3 -std=c++11 -I$(libgit2_include) -L$(libgit2_lib) -framework CoreFoundation -framework Security -lcurl -lz -liconv -lssh2 -lgit2
 endif
 
 CC = g++
@@ -18,7 +18,7 @@ FILES = ./src/*.cpp
 TARGET = GithubAnalyser
 
 all:	
-	$(CC) $(FILES) $(CFLAGS) -o $(TARGET)
+	@$(CC) $(FILES) $(CFLAGS) -o $(TARGET)
 
 clean:	
 	rm -rf $(TARGET)

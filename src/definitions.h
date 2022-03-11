@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstring>
 
+#define PLACE_REPOS_HERE "PLACE_REPOS_HERE.txt"
 #define CLONED_REPOS_DIR "./repos/"
 
 
@@ -21,8 +22,10 @@ struct RepoData {
     char name[256];
     int MRE = 0;
     float URE = 0.0f;
+    int commits = 0;
     int lambdas = 0;
     float avg_lambdas_per_commit = 0.0f;
+    int authors = 0;
 };
 
 struct AuthorData {
@@ -32,7 +35,7 @@ struct AuthorData {
     int commits = 0;
 };
 
-std::vector<std::string> getAllRepoUrls(const std::string& url);
+std::vector<std::string> getAllRepoUrls();
 std::string getRepoNameFromUrl(const std::string& url);
 int cloneRepo(const std::string& repoPath, const std::string& repoUrl);
 std::vector<AuthorData> getAllAuthorData(const std::string& repoPath);

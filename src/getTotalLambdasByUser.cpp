@@ -78,7 +78,6 @@ static int countLambdas(const std::string& file)
                         // Check for lambda before the block comment    
                         std::string substring = line.substr(0, stringPos);
                         if (std::regex_search(substring, lambda_regex)) {
-                            fprintf(stderr, "%s\n", line.c_str());  // TODO: Remove this!
                             lambda_counter++;
                         }
                         // If '*/' is not found on this line, that means the following lines will be inside a block comment
@@ -92,14 +91,12 @@ static int countLambdas(const std::string& file)
                         // Check for lambda before the line comment    
                         std::string substring = line.substr(0, stringPos);
                         if (std::regex_search(substring, lambda_regex)) {
-                            fprintf(stderr, "%s\n", line.c_str());  // TODO: Remove this!
                             lambda_counter++;
                         }
                     }
 
                     // No code comment was found, just check the line for lambda
                     else if (std::regex_search(line, lambda_regex)) {
-                        fprintf(stderr, "%s\n", line.c_str());  // TODO: Remove this!
                         lambda_counter++;
                     }
                 }
@@ -136,7 +133,6 @@ static int countLambdas(const std::string& file)
  * ------------------------------------------------------------------------------------------------ */
 int getTotalLambdasByUser(const std::string& repoPath, const std::string& authorName)
 {   
-    fprintf(stderr, "Searching repository for lambdas...\n");
     int lambda_counter = 0;
 
     // Create the DIFF_FILE that stores the output from the git diff command later
