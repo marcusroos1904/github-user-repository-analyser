@@ -9,6 +9,10 @@
 #include <git2.h>
 #include <vector>
 #include <string>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <algorithm>
+#include <cstring>
 
 #define CLONED_REPOS_DIR "./repos/"
 
@@ -29,9 +33,12 @@ struct AuthorData {
 };
 
 std::vector<std::string> getAllRepoUrls(const std::string& url);
+std::string getRepoNameFromUrl(const std::string& url);
 int cloneRepo(const std::string& repoPath, const std::string& repoUrl);
-int getTotalLambdasByUser(const std::string& repoPath, const std::string& authorName);
 std::vector<AuthorData> getAllAuthorData(const std::string& repoPath);
+std::string getAuthorname(const std::string username, const std::string& repoUrl);
+bool isUserContributorToRepo(const std::string& username, const std::vector<AuthorData>& all_authors);
+int getTotalLambdasByUser(const std::string& repoPath, const std::string& authorName);
 int calculateMRE(const std::vector<AuthorData>& all_authors);
 float calculateURE(const std::string& author_name, const std::vector<AuthorData>& all_authors);
 int getNumberOfCommits(const std::vector<AuthorData>& all_authors, const std::string& username);

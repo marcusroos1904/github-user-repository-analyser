@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <fstream>
 #include <regex>
+#include <algorithm>
 
 #define DIFF_FILE "commit_diff.txt"
 
@@ -222,9 +223,13 @@ int getTotalLambdasByUser(const std::string& repoPath, const std::string& author
             return -1;
         }
         
-        // Only check the commit that are made by the requested author
+        // Convert the commit name to lower case
         const git_signature* commit_signature = git_commit_committer(commit);
-        if (strcmp(commit_signature->name, authorName.c_str()) != 0) {
+        std::string name_lowercase(commit_signature->name);
+        std::for_each(name_lowercase.begin(), name_lowercase.end(), [](char & c) { c = ::tolower(c); });
+
+        // Only check the commit that are made by the requested author
+        if (name_lowercase != authorName) {
             git_commit_free(commit);
             continue;
         }

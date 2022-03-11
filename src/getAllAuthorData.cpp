@@ -73,8 +73,6 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     git_revwalk_push(walker, &oid);
 
     git_commit* commit;
-    const git_signature* commit_signature;
-    
     int counter = 0;
 
     // Loop though all the commits in the current branch
@@ -93,7 +91,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
         }
 
         // Ignore the author if it's GitHub. This author is used to perform all the merged pull requests
-        commit_signature = git_commit_committer(commit);
+        const git_signature* commit_signature = git_commit_committer(commit);
         if (strcmp(commit_signature->name, "GitHub") == 0) {
             git_commit_free(commit);
             continue;
@@ -117,8 +115,8 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
         if (!doesAuthorAlreadyExist || all_author_data.empty())
         {
             // The current author does not already exist, so create a new one and add it to the set
-            AuthorData data;
-            strcpy(data.name, commit_signature->name);
+            AuthorData data;  
+            strcpy(data.name, commit_signature->name);          
             data.firstCommit = days_offset;
             data.lastCommit = 0;
             data.commits += 1;
@@ -155,14 +153,26 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     git_repository_free(repo);
 
    
-    // TODO: Remove this later!
-    // TODO: Remember to remove the "counter" variable further up since this is only used when printing this debug data
+    // Convert all names to lower case
+    for (int i = 0; i < all_author_data.size(); i++) {
+        std::string name_lowercase(all_author_data[i].name);
+        std::for_each(name_lowercase.begin(), name_lowercase.end(), [](char & c) { c = ::tolower(c); });
+        strcpy(all_author_data[i].name, name_lowercase.c_str());
+    }
+
+
+    /*    
+    //PRINT DEBUG DATA
+    
+    // The "counter" variable further up can be removed since this is only used when printing this debug data
     fprintf(stderr, "\ngetAllAuthorData finished!! (This can be removed later, this is just to see if all authors was found)\n");
     fprintf(stderr, "Number of commits: %d, Number of authors: %d\n", counter, (int)all_author_data.size()); 
     for (int i = 0; i < all_author_data.size(); i++) {
         fprintf(stderr, "Commits: %d, FirstCommit: %d, LastCommit: %d, Name: %s\n", all_author_data[i].commits, all_author_data[i].firstCommit, all_author_data[i].lastCommit, all_author_data[i].name);
     }
     fprintf(stderr, "\n");
+    */
+    
 
     return all_author_data;
 }
