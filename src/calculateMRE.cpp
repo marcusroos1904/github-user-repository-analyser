@@ -24,6 +24,10 @@ int calculateMRE(const std::vector<AuthorData>& all_authors)
         }
 
         int diff = all_authors[i].lastCommit - all_authors[i].firstCommit;
+        if (diff <= 0) {
+            continue;  // Skip auhtors that has not atleast one day between their oldest and newest commit
+        }
+        
         total += diff;
         numberOfAuthors++;
     }

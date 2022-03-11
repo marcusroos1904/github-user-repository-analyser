@@ -71,15 +71,11 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
     git_revwalk_new(&walker, repo);
     git_revwalk_sorting(walker, GIT_SORT_TOPOLOGICAL);
     git_revwalk_push(walker, &oid);
-
     git_commit* commit;
-    int counter = 0;
 
     // Loop though all the commits in the current branch
     while (git_revwalk_next(&oid, walker) != GIT_ITEROVER) 
     {
-        counter++;
-
         // Lookup the next commit
         int error = git_commit_lookup(&commit, repo, &oid);
         if (error < 0) {
@@ -163,8 +159,7 @@ std::vector<AuthorData> getAllAuthorData(const std::string& repoPath)
 
     /*    
     //PRINT DEBUG DATA
-    
-    // The "counter" variable further up can be removed since this is only used when printing this debug data
+
     fprintf(stderr, "\ngetAllAuthorData finished!! (This can be removed later, this is just to see if all authors was found)\n");
     fprintf(stderr, "Number of commits: %d, Number of authors: %d\n", counter, (int)all_author_data.size()); 
     for (int i = 0; i < all_author_data.size(); i++) {

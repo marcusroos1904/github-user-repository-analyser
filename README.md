@@ -1,5 +1,39 @@
 # README
 
+## About
+  
+This program is used to analyze C++ GitHub repositories from the perspective of a given GitHub user.  
+  
+It will calculate and output the following for each repository:  
+ * MRE (The average time a contributor has spent working on the repository)
+ * URE (Which percentile the given user falls into, for the time spent working on the repository)
+ * Number of lambdas used by the given user
+ * Number of commits made by the given user
+ * Average lambdas per commit made by the given user  
+  
+These values can be used to research if more experienced developers (higher URE values)  
+uses lambdas more than less experienced developers (lower URE values).  
+When researching this, it will probably be a good idea to only look at more "competetive" repositories.  
+That means repositories that are popular, has a lot of contributors, and/or a high MRE value.
+  
+
+## How to use the program  
+
+The program will take a GitHub user as input, and all analyzing will be from the perspecitive of this user.  
+Before starting the program, place all C++ repositories you want to be analyzed inside the file: PLACE_REPOS_HERE.txt  
+Only include repositories that the given user has contributed to.  
+  
+PLACE_REPOS_HERE.txt  
+Place the full URL's of the repositories here. One repository per line
+```
+https://github.com/randomusername/randomreponame
+url2
+url2
+...
+
+```
+
+
 ## How to build on Linux  
   
 The program requires the libgit2 library  
